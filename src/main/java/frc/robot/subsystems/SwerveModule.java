@@ -4,6 +4,7 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -16,12 +17,12 @@ import frc.robot.Constants.SwerveModuleConstants;
 
 public class SwerveModule extends SubsystemBase {
 
-    // CAN IDs are assigned starting in the top right corner of the robot moving clockwise
+    // CAN IDs are assigned starting in the top left corner of the robot moving clockwise
     // Odd numbered IDs are drive motors and Even numbered IDs are turning motors
     // Absolute Encoder ID is assigned on a second pass clockwise around the robot
     // For example, module 2 has driveMotor ID 3, turningMotor ID 4, absoluteEncoder ID 10 
     // Each module has 2 motors so encoder IDs start at 9
-    private final int moduleID;
+    public final int moduleID;
 
     private final CANSparkMax driveMotor;
     private final CANSparkMax turningMotor;
@@ -42,6 +43,8 @@ public class SwerveModule extends SubsystemBase {
         this.turningMotor = new CANSparkMax(turningMotorID, MotorType.kBrushless);
         this.driveMotor.setInverted(driveMotorReversed);
         this.turningMotor.setInverted(turningMotorReversed);
+        this.turningMotor.setIdleMode(IdleMode.kBrake);
+        this.driveMotor.setIdleMode(IdleMode.kCoast);
         
         this.driveEncoder = this.driveMotor.getEncoder();
         this.driveEncoder.setPositionConversionFactor(SwerveModuleConstants.kDriveEncoderRot2Meter); // TODO: MEASURE THESE FACTORS
@@ -51,7 +54,7 @@ public class SwerveModule extends SubsystemBase {
         this.turningEncoder.setVelocityConversionFactor(SwerveModuleConstants.kTurningEncoderRPM2RadPerSec);
 
 
-        this.turningPidController = new PIDController(SwerveModuleConstants.kPTurning * .8, 0, 0);
+        this.turningPidController = new PIDController(SwerveModuleConstants.kPTurning, .0001, .01);
         this.turningPidController.enableContinuousInput(-Math.PI, Math.PI); // Use PI rad as our reference point here because of the conversion factors set above
 
         this.absoluteEncoder = new CANCoder(CANcoderID);
@@ -101,20 +104,32 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public void setDesiredState(SwerveModuleState state) {
+        resetEncoders();  // maybe works?
         if (Math.abs(state.speedMetersPerSecond) < .001) {
             stop();
             return;
         }
         
         state = SwerveModuleState.optimize(state, getState().angle);
+        
         driveMotor.set(state.speedMetersPerSecond / DrivebaseConstants.kMaxSpeedMetersPerSecond); // 4 is max speed in m/s TODO: MEASURE MAX SPEED
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
         SmartDashboard.putString("Swerve["+this.moduleID+"] State", state.toString());
-        SmartDashboard.putNumber("Swerve["+this.moduleID+"] Absolute Encoder Val (RAD)", getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("S["+this.moduleID+"] Desired Rad State", state.angle.getRadians());
+        SmartDashboard.putNumber("S["+this.moduleID+"] PID calculation", turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
+
     }
 
     public void stop() {
         driveMotor.set(0);
         turningMotor.set(0);
+    }
+
+    // TESTING
+    public void setTurningMotor(double speed) {
+        turningMotor.set(speed);
+    }
+    public void setDriveMotor(double speed) {
+        driveMotor.set(speed);
     }
 }

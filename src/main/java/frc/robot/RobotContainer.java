@@ -36,10 +36,10 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
       new SwerveCmdJoystick(
         swerveSubsystem, 
-        () -> controller.getLeftX(), 
+        () -> -controller.getLeftX(), //positive?
         () -> controller.getLeftY(), 
         () -> controller.getRightX(), 
-        () -> true));
+        () -> false));  // true
 
     // Configure the trigger bindings
     configureBindings();
@@ -62,7 +62,19 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+
+    controller.leftBumper().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+
+    // TESTS
+    boolean testingAngle = true;
+    controller.y().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(1, 0.5, testingAngle)));
+    controller.b().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(2, 0.5, testingAngle)));
+    controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(3, 0.5, testingAngle)));
+    controller.x().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(4, 0.5, testingAngle)));
+    controller.rightBumper().onTrue(new InstantCommand(() -> swerveSubsystem.stopModules()));
+    
+
+
   }
 
   /**

@@ -19,11 +19,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-    
-    private final SwerveModule frontLeft = new SwerveModule(1, false, false, 0, false);
-    private final SwerveModule frontRight = new SwerveModule(2, true, true, 0, true);
-    private final SwerveModule backRight = new SwerveModule(3, true, true, 0, true);
-    private final SwerveModule backLeft = new SwerveModule(4, false, false, 0, false);
+    double fl = -0.16873788666742;
+    private final SwerveModule frontLeft = new SwerveModule(1, false, true, 1.347+2.988, false);
+    private final SwerveModule frontRight = new SwerveModule(2, true, true, 0.688, false);
+    private final SwerveModule backRight = new SwerveModule(3, true, true, 1.977+0.16, false);
+    private final SwerveModule backLeft = new SwerveModule(4, true, true, 0.759+0.08, false);
 
     private final AHRS gyro = new AHRS(Port.kUSB1, SerialDataType.kProcessedData, Byte.parseByte("100"));
 
@@ -50,7 +50,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putNumber("Robot Heading", getHeading());  // -frontLeft.getAbsoluteEncoderRad()
+        SmartDashboard.putNumber("Swerve["+frontLeft.moduleID+"] Absolute Encoder Val (RAD)", frontLeft.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("Swerve["+frontRight.moduleID+"] Absolute Encoder Val (RAD)", frontRight.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("Swerve["+backRight.moduleID+"] Absolute Encoder Val (RAD)", backRight.getAbsoluteEncoderRad());
+        SmartDashboard.putNumber("Swerve["+backLeft.moduleID+"] Absolute Encoder Val (RAD)", backLeft.getAbsoluteEncoderRad());
+
     } 
 
     public void stopModules() {
@@ -62,9 +67,27 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void setModules(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DrivebaseConstants.kMaxSpeedMetersPerSecond); // TODO: MEASURE MAX SPEED
-        //frontLeft.setDesiredState(desiredStates[0]);
-        //frontRight.setDesiredState(desiredStates[1]);
+        frontLeft.setDesiredState(desiredStates[0]);
+        frontRight.setDesiredState(desiredStates[1]);
         backRight.setDesiredState(desiredStates[2]);
-        //backLeft.setDesiredState(desiredStates[3]);
+        backLeft.setDesiredState(desiredStates[3]);
+    }
+
+    // FOR MODULE TESTING
+    public void testModule(int id, double speed, boolean usingAngleMotor) {
+        SwerveModule mod;
+        switch(id) {
+            case 1: mod = frontLeft; break;
+            case 2: mod = frontRight; break;
+            case 3: mod = backRight; break;
+            case 4: mod = backLeft; break;
+            default: mod = frontLeft; break;
+        }
+        if(usingAngleMotor) {
+            mod.setTurningMotor(speed);
+        } 
+        else {
+            mod.setDriveMotor(speed);
+        }
     }
 }

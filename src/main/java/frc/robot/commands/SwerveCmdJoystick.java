@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -57,7 +58,12 @@ public class SwerveCmdJoystick extends CommandBase {
         SwerveModuleState[] moduleStates = DrivebaseConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
         //6. apply
-        swerveSubsystem.setModules(moduleStates);
+        // swerveSubsystem.setModules(moduleStates);
+
+        // for now, try to set all the wheels to repeatable locations
+        SwerveModuleState testState = new SwerveModuleState(.5, new Rotation2d(0));
+        SwerveModuleState[] testModuleStates = {testState, testState, testState, testState};
+        swerveSubsystem.setModules(testModuleStates);
     }
 
     @Override
