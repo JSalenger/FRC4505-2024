@@ -9,7 +9,9 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SwerveCmdJoystick;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -26,6 +28,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(14);
 
   private final CommandXboxController controller =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -71,6 +74,8 @@ public class RobotContainer {
     // controller.b().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(2, 0.5, testingAngle)));
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(3, 0.5, testingAngle)));
     // controller.x().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(4, 0.5, testingAngle)));
+    controller.leftTrigger().onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0.25)));
+    controller.leftTrigger().onFalse(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0)));
     controller.rightBumper().onTrue(new InstantCommand(() -> swerveSubsystem.stopModules()));
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.setOffsets()));
     
