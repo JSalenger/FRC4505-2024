@@ -7,8 +7,11 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.AHRS.SerialDataType;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint;
 import edu.wpi.first.wpilibj.SPI;
@@ -19,21 +22,16 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-    double fl = -0.16873788666742;
-    // double[] offsets = {1.347+2.988, 0.688, 1.977+0.16, 0.759+0.08};
-    // double[] offsets = {
-    //     4.979-0.224-Math.PI/2, 
-    //     3.848+Math.PI/2, 
-    //     2.661-0.07-Math.PI/2, 
-    //     1.242-0.19+Math.PI/2};
-    double[] offsets = {0.834-Math.PI/2, 0.657+Math.PI/2, 4.139-Math.PI/2, 0.500+Math.PI/2};
-    // switching 1 and 3 seems to make turning directions correct
-    private final SwerveModule frontLeft = new SwerveModule(3, false, true, offsets[2], false);
+    double[] offsets = {0.834, 0.657, 4.139, 0.500};
+    private final SwerveModule frontLeft = new SwerveModule(1, true, true, offsets[0], false);
     private final SwerveModule frontRight = new SwerveModule(2, true, true, offsets[1], false);
-    private final SwerveModule backRight = new SwerveModule(1, false, true, offsets[0], false);
+    private final SwerveModule backRight = new SwerveModule(3, true, true, offsets[2], false);
     private final SwerveModule backLeft = new SwerveModule(4, true, true, offsets[3], false);
 
     private final AHRS gyro = new AHRS(Port.kUSB1, SerialDataType.kProcessedData, Byte.parseByte("100"));
+    private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
+        DrivebaseConstants.kDriveKinematics, 
+        getRotation2d(), getPositions());
 
     public SwerveSubsystem() {
         new Thread(() -> {
@@ -59,6 +57,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        odometry.update(getRotation2d(), getPositions());
+
         SmartDashboard.putNumber("Robot Heading", getHeading());  // -frontLeft.getAbsoluteEncoderRad()
         SmartDashboard.putNumber("Swerve["+frontLeft.moduleID+"] Absolute Encoder Val (RAD)", frontLeft.getAbsoluteEncoderRad());
         SmartDashboard.putNumber("Swerve["+frontRight.moduleID+"] Absolute Encoder Val (RAD)", frontRight.getAbsoluteEncoderRad());
@@ -74,7 +75,25 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Swerve["+frontRight.moduleID+"] Abs Enc Raw (RAD)", frontRight.getAbsoluteEncoderRadRaw());
         SmartDashboard.putNumber("Swerve["+backRight.moduleID+"] Abs Enc Raw", backRight.getAbsoluteEncoderRadRaw());
         SmartDashboard.putNumber("Swerve["+backLeft.moduleID+"] Abs Enc Raw (RAD)", backLeft.getAbsoluteEncoderRadRaw());
+
     } 
+
+    public Pose2d getPose() {
+        return odometry.getPoseMeters();
+    }
+
+    public void resetOdometry(Pose2d pose) {
+        odometry.resetPosition(getRotation2d(), getPositions(), pose);
+    }
+
+    public SwerveModulePosition[] getPositions() {  // useful for auto
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        positions[0] = frontLeft.getPosition();
+        positions[1] = frontRight.getPosition();
+        positions[2] = backRight.getPosition();
+        positions[3] = backLeft.getPosition();
+        return positions;
+    }
 
     public void stopModules() {
         frontLeft.stop();

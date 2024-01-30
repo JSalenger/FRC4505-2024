@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -34,16 +35,16 @@ public final class Constants {
     public static final double kWheelBase = Units.inchesToMeters(29);
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-      new Translation2d(kWheelBase / 2, -kTrackWidth/ 2), // front left
-      new Translation2d(kWheelBase / 2, kTrackWidth / 2), // front right
-      new Translation2d(-kWheelBase / 2, kTrackWidth / 2), // back right
-      new Translation2d(-kWheelBase /2, -kTrackWidth / 2) // back left
+      new Translation2d(kWheelBase / 2, kTrackWidth/ 2), // front left
+      new Translation2d(kWheelBase / 2, -kTrackWidth / 2), // front right
+      new Translation2d(-kWheelBase / 2, -kTrackWidth / 2), // back right
+      new Translation2d(-kWheelBase /2, kTrackWidth / 2) // back left
     );
   }
 
   public static class SwerveModuleConstants {
-    public static final double kWheelDiamteterMeters = Units.inchesToMeters(4);
-    public static final double kDriveMotorGearRatio = 1 / 5.8462;
+    public static final double kWheelDiamteterMeters = Units.inchesToMeters(4); // TODO: CHECK
+    public static final double kDriveMotorGearRatio = 14/50;  //1 / 5.8462;
     public static final double kTurningMotorGearRatio = 1 / 18.0;
     public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiamteterMeters;
     public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
@@ -63,4 +64,13 @@ public final class Constants {
 
     public static final double kDeadband = 0.05;
 }
+  // new addition
+  public static final class AutoConstants {
+    public static final double kPXController = 1;
+    public static final double kPYController = 1;
+    public static final double kPAngleController = 1;
+
+    public static final TrapezoidProfile.Constraints kAngleControllerConstraints = 
+      new TrapezoidProfile.Constraints(DrivebaseConstants.kMaxAngularSpeed, DrivebaseConstants.kTeleMaxAngularAccelerationMetersPerSecond);
+  }
 }

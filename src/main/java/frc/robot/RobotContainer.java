@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.autos.AutoTest;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SwerveCmdJoystick;
@@ -36,9 +37,9 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
       new SwerveCmdJoystick(
         swerveSubsystem, 
-        () -> -controller.getLeftX(), //positive?
-        () -> controller.getLeftY(), 
-        () -> controller.getRightX(), 
+        () -> -controller.getLeftY(), // x is forward and y is sideways (wpilib convention)
+        () -> -controller.getLeftX(), 
+        () -> -controller.getRightX(), 
         () -> true));  // true
 
     // Configure the trigger bindings
@@ -85,6 +86,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+    // return Autos.exampleAuto(m_exampleSubsystem);
+    return new AutoTest(swerveSubsystem);
   }
 }

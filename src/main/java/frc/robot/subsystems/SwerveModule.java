@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -100,12 +101,21 @@ public class SwerveModule extends SubsystemBase {
         turningEncoder.setPosition(getAbsoluteEncoderRad());
     }
 
+    public void resetTurningEncoder() {
+        turningEncoder.setPosition(getAbsoluteEncoderRad());
+    }
+
     public SwerveModuleState getState() {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));
     }
 
+    public SwerveModulePosition getPosition() {
+        return new SwerveModulePosition(this.getDrivePosition(), new Rotation2d(this.getTurningPosition()));
+    }
+
     public void setDesiredState(SwerveModuleState state) {
-        resetEncoders();  // maybe works?
+        // resetEncoders();  // maybe works?
+        resetTurningEncoder();
         if (Math.abs(state.speedMetersPerSecond) < .001) {
             stop();
             return;
