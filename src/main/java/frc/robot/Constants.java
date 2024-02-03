@@ -23,12 +23,12 @@ public final class Constants {
   }
 
   public static class DrivebaseConstants {
-    public static final double kMaxSpeedMetersPerSecond = 2;
-    public static final double kMaxAngularSpeed = 2 * 2 * Math.PI * 0.2;
+    public static final double kMaxSpeedMetersPerSecond = 4;
+    public static final double kMaxAngularSpeed = 2 * 2 * Math.PI;
     public static final double kTeleMaxDriveAccelerationMetersPerSecond = 3;
     public static final double kTeleMaxAngularAccelerationMetersPerSecond = 3;
 
-    public static final double kTeleMaxDriveSpeed = kMaxSpeedMetersPerSecond / 4;
+    public static final double kTeleMaxDriveSpeed = kMaxSpeedMetersPerSecond / 2;  // /4
     public static final double kTeleMaxAngularSpeed = kMaxAngularSpeed / 4;
 
     public static final double kTrackWidth = Units.inchesToMeters(29); // diff btw left and right
@@ -44,7 +44,7 @@ public final class Constants {
 
   public static class SwerveModuleConstants {
     public static final double kWheelDiamteterMeters = Units.inchesToMeters(4); // TODO: CHECK
-    public static final double kDriveMotorGearRatio = 14/50;  //1 / 5.8462;
+    public static final double kDriveMotorGearRatio = 16/50;  // try 14/50 once the auto works again//1 / 5.8462;
     public static final double kTurningMotorGearRatio = 1 / 18.0;
     public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiamteterMeters;
     public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
@@ -64,11 +64,12 @@ public final class Constants {
 
     public static final double kDeadband = 0.05;
 }
-  // new addition
   public static final class AutoConstants {
-    public static final double kPXController = 1;
+    public static final double kPXController = 1;  // all kP previously 1
     public static final double kPYController = 1;
-    public static final double kPAngleController = 1;
+    public static final double kPAngleController = 1;  // 0.5
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
     public static final TrapezoidProfile.Constraints kAngleControllerConstraints = 
       new TrapezoidProfile.Constraints(DrivebaseConstants.kMaxAngularSpeed, DrivebaseConstants.kTeleMaxAngularAccelerationMetersPerSecond);

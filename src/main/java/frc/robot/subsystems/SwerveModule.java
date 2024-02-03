@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DrivebaseConstants;
 import frc.robot.Constants.SwerveModuleConstants;
 
@@ -46,7 +47,7 @@ public class SwerveModule extends SubsystemBase {
         this.driveMotor.setInverted(driveMotorReversed);
         this.turningMotor.setInverted(turningMotorReversed);
         this.turningMotor.setIdleMode(IdleMode.kBrake);
-        this.driveMotor.setIdleMode(IdleMode.kCoast);
+        this.driveMotor.setIdleMode(IdleMode.kBrake);  // coast
         
         this.driveEncoder = this.driveMotor.getEncoder();
         this.driveEncoder.setPositionConversionFactor(SwerveModuleConstants.kDriveEncoderRot2Meter); // TODO: MEASURE THESE FACTORS
@@ -73,7 +74,7 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public double getDrivePosition() {
-        return driveEncoder.getPosition();
+        return driveEncoder.getPosition() / 22;
     }
 
     public double getTurningPosition() {
@@ -123,12 +124,12 @@ public class SwerveModule extends SubsystemBase {
         
         state = SwerveModuleState.optimize(state, getState().angle);
         
-        driveMotor.set(state.speedMetersPerSecond); // 4 is max speed in m/s TODO: MEASURE MAX SPEED
+        driveMotor.set(state.speedMetersPerSecond / Constants.DrivebaseConstants.kMaxSpeedMetersPerSecond); // 4 is max speed in m/s TODO: MEASURE MAX SPEED
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
         SmartDashboard.putString("Swerve["+this.moduleID+"] State", state.toString());
         SmartDashboard.putNumber("S["+this.moduleID+"] Desired Rad", state.angle.getRadians());
-        SmartDashboard.putNumber("S["+this.moduleID+"] drive power", state.speedMetersPerSecond);
-        // SmartDashboard.putNumber("S["+this.moduleID+"] PID calculation", turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
+        SmartDashboard.putNumber("S["+this.moduleID+"] drive power", state.speedMetersPerSecond/Constants.DrivebaseConstants.kMaxSpeedMetersPerSecond);
+        SmartDashboard.putNumber("S["+this.moduleID+"] drive enc", getDrivePosition());
 
     }
 

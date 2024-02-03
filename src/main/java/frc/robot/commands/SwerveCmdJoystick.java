@@ -62,7 +62,7 @@ public class SwerveCmdJoystick extends Command {
         swerveSubsystem.setModules(moduleStates);
 
         // for now, try to set all the wheels to repeatable locations
-        // SwerveModuleState testState = new SwerveModuleState(.5*0.01, new Rotation2d(0));
+        // SwerveModuleState testState = new SwerveModuleState(.5*0.1, new Rotation2d(0));
         // SwerveModuleState[] testModuleStates = {testState, testState, testState, testState};
         // swerveSubsystem.setModules(testModuleStates);
     }

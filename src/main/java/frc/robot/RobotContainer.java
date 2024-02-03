@@ -11,6 +11,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SwerveCmdJoystick;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -65,9 +66,9 @@ public class RobotContainer {
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
     controller.leftBumper().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
-
+    controller.rightBumper().onTrue(new InstantCommand(() -> swerveSubsystem.resetOdometry(new Pose2d())));
     // TESTS
-    boolean testingAngle = true;
+    boolean testingAngle = false;
     // controller.y().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(1, 0.5, testingAngle)));
     // controller.b().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(2, 0.5, testingAngle)));
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(3, 0.5, testingAngle)));
