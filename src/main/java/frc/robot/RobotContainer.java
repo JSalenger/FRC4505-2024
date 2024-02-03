@@ -10,6 +10,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.SwerveCmdJoystick;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,6 +30,7 @@ public class RobotContainer {
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(14);
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(15);
 
   private final CommandXboxController controller =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -77,7 +79,10 @@ public class RobotContainer {
     controller.leftTrigger().onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0.25)));
     controller.leftTrigger().onFalse(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0)));
     controller.rightBumper().onTrue(new InstantCommand(() -> swerveSubsystem.stopModules()));
+    controller.rightTrigger().onTrue(new InstantCommand(() -> shooterSubsystem.setShooterSpeed(0.5)));
+    controller.rightTrigger().onFalse(new InstantCommand(() -> shooterSubsystem.setShooterSpeed(0)));
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.setOffsets()));
+
     
 
 
