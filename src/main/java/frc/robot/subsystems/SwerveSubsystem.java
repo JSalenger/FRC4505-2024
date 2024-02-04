@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-    double[] offsets = {2.923, 4.795, 4.139, 3.164};  //{0.834, 0.657, 4.139, 0.500}
+    double[] offsets = {2.114, 4.795, 4.139, 3.164};  //{0.834, 0.657, 4.139, 0.500}
     private final SwerveModule frontLeft = new SwerveModule(1, true, true, offsets[0], false);
     private final SwerveModule frontRight = new SwerveModule(2, true, true, offsets[1], false);
     private final SwerveModule backRight = new SwerveModule(3, true, true, offsets[2], false);

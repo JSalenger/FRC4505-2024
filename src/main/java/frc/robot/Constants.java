@@ -65,9 +65,9 @@ public final class Constants {
     public static final double kDeadband = 0.05;
 }
   public static final class AutoConstants {
-    public static final double kPXController = 1;  // all kP previously 1
-    public static final double kPYController = 1;
-    public static final double kPAngleController = 1;  // 0.5
+    public static final double kPXController = 3;  // all kP previously 1
+    public static final double kPYController = 3;
+    public static final double kPAngleController = 5;  // 0.5
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
