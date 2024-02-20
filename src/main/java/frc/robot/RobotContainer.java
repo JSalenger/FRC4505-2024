@@ -7,9 +7,18 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SetShooterCommand;
 import frc.robot.commands.SwerveCmdJoystick;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -25,22 +34,30 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  /*private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(14);
+  private final ShooterSubsystem shooterSubsystem = new ShooterSubsystem(15);
+  */
+  // private final PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem(0, 1);
 
   private final CommandXboxController controller =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  // private CANSparkMax spark1 = new CANSparkMax(15, MotorType.kBrushless);
+  // private CANSparkMax spark2 = new CANSparkMax(16, MotorType.kBrushless);
+  private ShooterSubsystem shooter = new ShooterSubsystem(15);
+  // private IntakeSubsystem intake = new IntakeSubsystem(16);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Set default command
-    swerveSubsystem.setDefaultCommand(
+    /*swerveSubsystem.setDefaultCommand(
       new SwerveCmdJoystick(
         swerveSubsystem, 
         () -> -controller.getLeftX(), //positive?
         () -> controller.getLeftY(), 
         () -> controller.getRightX(), 
         () -> true));  // true
-
+      */
     // Configure the trigger bindings
     configureBindings();
   }
@@ -63,7 +80,7 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    controller.leftBumper().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
+    //controller.leftBumper().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
 
     // TESTS
     boolean testingAngle = true;
@@ -71,8 +88,28 @@ public class RobotContainer {
     // controller.b().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(2, 0.5, testingAngle)));
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(3, 0.5, testingAngle)));
     // controller.x().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(4, 0.5, testingAngle)));
+    /*
+    controller.leftTrigger().onTrue(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0.25)));
+    controller.leftTrigger().onFalse(new InstantCommand(() -> intakeSubsystem.setIntakeSpeed(0)));
     controller.rightBumper().onTrue(new InstantCommand(() -> swerveSubsystem.stopModules()));
+    controller.rightTrigger().onTrue(new InstantCommand(() -> shooterSubsystem.setShooterSpeed(0.5), shooterSubsystem));
+    controller.rightTrigger().onFalse(new InstantCommand(() -> shooterSubsystem.setShooterSpeed(0)));
+    */
+    // controller.a().onTrue(new InstantCommand(() -> pneumaticSubsystem.setSolenoid(), pneumaticSubsystem));
+    // controller.b().onTrue(new InstantCommand(() -> pneumaticSubsystem.getPressure(), pneumaticSubsystem));
+
+    // controller.rightBumper().onTrue(intake.setIntakeCommand(0.7));
+    // controller.leftBumper().onTrue(shooter.setShooterCommand(1));
+    // controller.rightBumper().onFalse(intake.setIntakeCommand(0));
+    // controller.leftBumper().onFalse(shooter.setShooterCommand(0));
+    // controller.leftBumper().onTrue(new SetShooterCommand(shooter, intake));
+    controller.leftBumper().onTrue(new InstantCommand(() -> shooter.setShooterSpeed(1)));
+    controller.leftBumper().onFalse(new InstantCommand(() -> shooter.setShooterSpeed(0)));
+
+
+
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.setOffsets()));
+
     
 
 
