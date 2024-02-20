@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -19,10 +20,15 @@ public class IntakeSubsystem extends SubsystemBase {
     this.intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
     this.intakeEncoder = this.intakeMotor.getEncoder();
     intakeEncoder.setPosition(0);
+    intakeMotor.setInverted(true);
   }
 
   public void setIntakeSpeed(double speed){
     intakeMotor.set(speed);
+  }
+
+  public Command setIntakeCommand(double speed) {
+    return new InstantCommand(() -> setIntakeSpeed(speed), this);
   }
 
   @Override
