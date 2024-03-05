@@ -94,7 +94,8 @@ public class DriveTrajectory extends SequentialCommandGroup {
         addRequirements(swerve);
         
             addCommands(
-        new InstantCommand(() -> swerve.resetOdometry(trajectory.getInitialPose())),
-        swerveControllerCommand);
+        // new InstantCommand(() -> swerve.resetOdometry(trajectory.getInitialPose())),
+        swerveControllerCommand, 
+        new InstantCommand(() -> swerve.stopModules()));
   }
 }

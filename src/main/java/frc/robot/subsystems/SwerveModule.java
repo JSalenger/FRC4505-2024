@@ -74,7 +74,7 @@ public class SwerveModule extends SubsystemBase {
     }
 
     public double getDrivePosition() {
-        return driveEncoder.getPosition() / 22 * 4.88/4.72;
+        return driveEncoder.getPosition() / 22 * 4.88/4.72 * 1/0.7;
     }
 
     public double getTurningPosition() {
@@ -152,5 +152,13 @@ public class SwerveModule extends SubsystemBase {
 
     public void setOffset(double offset) {
         this.absoluteEncoderOffsetRad = offset;
+    }
+
+    public void setDriveMotorIdleMode(IdleMode mode) {
+        this.driveMotor.setIdleMode(mode);
+    }
+
+    public IdleMode getDriveMotorIdleMode() {
+        return this.driveMotor.getIdleMode();
     }
 }

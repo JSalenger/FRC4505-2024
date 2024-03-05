@@ -28,7 +28,7 @@ public final class Constants {
     public static final double kTeleMaxDriveAccelerationMetersPerSecond = 3;
     public static final double kTeleMaxAngularAccelerationMetersPerSecond = 3;
 
-    public static final double kTeleMaxDriveSpeed = kMaxSpeedMetersPerSecond / 2;  // /4
+    public static final double kTeleMaxDriveSpeed = kMaxSpeedMetersPerSecond * 0.75;  // /2
     public static final double kTeleMaxAngularSpeed = kMaxAngularSpeed / 4;
 
     public static final double kTrackWidth = Units.inchesToMeters(29); // diff btw left and right
@@ -50,7 +50,7 @@ public final class Constants {
     public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-    public static final double kPTurning = .5d;
+    public static final double kPTurning = 0.75d;  // 0.5d
   }
 
   // https://github.com/SeanSun6814/FRC0ToAutonomous/blob/master/%236%20Swerve%20Drive%20Auto/src/main/java/frc/robot/Constants.java
@@ -67,9 +67,9 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double kPXController = 3;  // all kP previously 1
     public static final double kPYController = 3;
-    public static final double kPAngleController = 5;  // 0.5
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+    public static final double kPAngleController = 15;  // 5
+    public static final double kMaxSpeedMetersPerSecond = 4;  // 3
+    public static final double kMaxAccelerationMetersPerSecondSquared = 3;  // 3
 
     public static final TrapezoidProfile.Constraints kAngleControllerConstraints = 
       new TrapezoidProfile.Constraints(DrivebaseConstants.kMaxAngularSpeed, DrivebaseConstants.kTeleMaxAngularAccelerationMetersPerSecond);

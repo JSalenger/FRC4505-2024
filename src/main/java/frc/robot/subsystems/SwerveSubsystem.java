@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.AHRS.SerialDataType;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -23,11 +24,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DrivebaseConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-    double[] offsets = {2.114, 4.795, 4.139, 3.164};  //{0.834, 0.657, 4.139, 0.500}
+    double[] offsets = {2.114, 4.795, 4.139, 5.122};  //{0.834, 0.657, 4.139, 0.500}
     private final SwerveModule frontLeft = new SwerveModule(1, true, true, offsets[0], false);
     private final SwerveModule frontRight = new SwerveModule(2, true, true, offsets[1], false);
     private final SwerveModule backRight = new SwerveModule(3, true, true, offsets[2], false);
-    private final SwerveModule backLeft = new SwerveModule(4, true, true, offsets[3], false);
+    private final SwerveModule backLeft = new SwerveModule(4, false, true, offsets[3], false);
 
     private final AHRS gyro = new AHRS(Port.kUSB1, SerialDataType.kProcessedData, Byte.parseByte("100"));
     private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
@@ -35,10 +36,16 @@ public class SwerveSubsystem extends SubsystemBase {
         getRotation2d(), getPositions());
     private final Field2d field = new Field2d();
 
+    private double lastHeading = getHeading();
+
+    private boolean isNewHeadingMaintainer = true;
+
+    private SwerveModule[] modules = {frontLeft, frontRight, backRight, backLeft};
+
     public SwerveSubsystem() {
         new Thread(() -> {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(5000);  // 1000 ms
                 zeroHeading(); // requires a delay so that the gyroscope can start up & calibrate
             } catch (Exception e) {}    
         }).start();
@@ -49,8 +56,24 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHeading() {
-        // -angle because google told me that it should be counterclockwise positive
-        return Math.IEEEremainder(-gyro.getAngle(), 360);
+        // 360-angle because google told me that it should be counterclockwise positive
+        return Math.IEEEremainder(360-gyro.getAngle(), 360);
+    }
+
+    public double getLastHeading() {
+        return lastHeading;
+    }
+
+    public void setLastHeading() {
+        lastHeading = getHeading();
+    }
+
+    public boolean isNewHeadingMaintainer() {
+        return isNewHeadingMaintainer;
+    }
+
+    public void toggleHeadingMaintainer() {
+        isNewHeadingMaintainer = !isNewHeadingMaintainer;
     }
 
     public Rotation2d getRotation2d() {
@@ -82,6 +105,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Swerve["+frontRight.moduleID+"] Abs Enc Raw (RAD)", frontRight.getAbsoluteEncoderRadRaw());
         SmartDashboard.putNumber("Swerve["+backRight.moduleID+"] Abs Enc Raw", backRight.getAbsoluteEncoderRadRaw());
         SmartDashboard.putNumber("Swerve["+backLeft.moduleID+"] Abs Enc Raw (RAD)", backLeft.getAbsoluteEncoderRadRaw());
+
+        SmartDashboard.putString("new heading maintainer?", "["+isNewHeadingMaintainer+"]");
 
     } 
 
@@ -135,10 +160,11 @@ public class SwerveSubsystem extends SubsystemBase {
         }
     }
 
-    public void setOffsets() {
-        frontLeft.setOffset(frontLeft.getAbsoluteEncoderRadRaw()+Math.PI/2);
-        frontRight.setOffset(frontRight.getAbsoluteEncoderRadRaw()-Math.PI/2);
-        backLeft.setOffset(backLeft.getAbsoluteEncoderRadRaw()+Math.PI/2);
-        backRight.setOffset(backRight.getAbsoluteEncoderRadRaw()-Math.PI/2);
+    public void toggleDriveMotorIdleModes() {
+        for(SwerveModule module : modules) {
+            module.setDriveMotorIdleMode((
+            module.getDriveMotorIdleMode().equals(IdleMode.kBrake)) ? 
+            IdleMode.kCoast : IdleMode.kBrake);
+        }
     }
 }
