@@ -21,15 +21,19 @@ public class IntakeSubsystem extends SubsystemBase {
     this.intakeMotor = new CANSparkMax(intakeMotorID, MotorType.kBrushless);
     this.intakeEncoder = this.intakeMotor.getEncoder();
     intakeEncoder.setPosition(0);
+    intakeEncoder.setPositionConversionFactor(1);
     intakeMotor.setInverted(true);
+
+    // intakeMotor.setSmartCurrentLimit(30);
     // deal with high CAN utilization
-    intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
-    intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
-    intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+    // intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    // intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+    // intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
     }
 
   public void fixIntakeDirection() {
     intakeMotor.setInverted(true);
+    intakeEncoder.setPositionConversionFactor(1);
   }
 
   public void setIntakeSpeed(double speed){
@@ -38,6 +42,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command setIntakeCommand(double speed) {
     return new InstantCommand(() -> setIntakeSpeed(speed), this);
+  }
+
+  public RelativeEncoder getEncoder() {
+    return intakeEncoder;
   }
 
   @Override

@@ -60,11 +60,15 @@ public class SwerveSubsystem extends SubsystemBase {
         return Math.IEEEremainder(360-gyro.getAngle(), 360);
     }
 
+    public boolean isFlatOnGround() {
+        return Math.abs(gyro.getPitch()) < 3 && Math.abs(gyro.getRoll()) < 3;
+    }
+
     public double getLastHeading() {
         return lastHeading;
     }
 
-    public void setLastHeading() {
+    public void updateLastHeading() {
         lastHeading = getHeading();
     }
 

@@ -24,15 +24,19 @@ public class ShooterSubsystem extends SubsystemBase {
     shooterEncoder.setPosition(0);
     shooterMotor.setIdleMode(IdleMode.kCoast);
     shooterMotor.setInverted(true);  // check
+    shooterEncoder.setPositionConversionFactor(1);
+
+    // shooterMotor.setSmartCurrentLimit(30);
 
     // deal with high CAN bus utilization
-    shooterMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
-    shooterMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
-    shooterMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
+    // shooterMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    // shooterMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+    // shooterMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus3, 500);
   }
 
   public void fixShooterDirection() {
     shooterMotor.setInverted(true);
+    shooterEncoder.setPositionConversionFactor(1);
   }
   
   public void setShooterSpeed(double speed){

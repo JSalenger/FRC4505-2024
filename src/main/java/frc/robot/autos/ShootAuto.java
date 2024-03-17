@@ -62,8 +62,9 @@ public class ShootAuto extends SequentialCommandGroup {
         // TODO SequentialCommandGroup that starts intake, goes to note, stops intake, returns to speaker, then shoots
         addCommands(
             new InstantCommand(() -> swerve.resetOdometry(robotStartPose)),
-            new WaitCommand(2), 
             new InstantCommand(() -> swerve.stopModules()),
+
+            new WaitCommand(2), 
  
             // first and second notes
             new SetShooterCommand(shooter, intake) // replace with shoot command

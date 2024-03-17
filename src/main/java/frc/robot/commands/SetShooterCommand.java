@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -8,23 +9,37 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class SetShooterCommand extends Command {
     private final ShooterSubsystem shooter;
     private final IntakeSubsystem intake;
+    private final SlewRateLimiter accLimiter = new SlewRateLimiter(0.05);
     public SetShooterCommand(ShooterSubsystem shooter, IntakeSubsystem intake) {
         this.shooter = shooter;
         this.intake = intake;
-        // addRequirements(shooter, intake);
+
         shooter.getEncoder().setPosition(0);
 
+        shooter.fixShooterDirection();
+        intake.fixIntakeDirection();  // prevent randomly reversing direction mid-match
+
         addRequirements(shooter, intake);
+        // withTimeout(6);
+    }
+
+    @Override
+    public void initialize() {
+        shooter.getEncoder().setPosition(0);
+
+        shooter.fixShooterDirection();
+        intake.fixIntakeDirection();
     }
 
     @Override
     public void execute() {
-        shooter.fixShooterDirection();
-        intake.fixIntakeDirection();  // prevent randomly reversing direction mid-match
+        // shooter.fixShooterDirection();
+        // intake.fixIntakeDirection();  // prevent randomly reversing direction mid-match
 
-        shooter.setShooterSpeed(1);
-        if(shooter.getEncoder().getPosition() > 20) {  // allow shooter to reach full speed
-            intake.setIntakeSpeed(0.3);
+        // shooter.setShooterSpeed(1);
+        shooter.setShooterSpeed(0.7);
+        if(Math.abs(shooter.getEncoder().getPosition()) > 10) {  // allow shooter to reach full speed
+            intake.setIntakeSpeed(0.5);
         }
     }
 
@@ -37,7 +52,7 @@ public class SetShooterCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return shooter.getEncoder().getPosition() > 150; //100
+        return Math.abs(shooter.getEncoder().getPosition()) > 40; //100
     }
 
     

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,6 +22,7 @@ public class SwerveCmdJoystick extends Command {
 
     private final Vision limelight;
     private Supplier<Boolean> autoAimingFunction;
+    private PIDController headingPID;
 
     public SwerveCmdJoystick(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpeedFunction, Supplier<Boolean> fieldOrientedFunction, Vision limelight, Supplier<Boolean> autoAimingFunction) {
         this.swerveSubsystem = swerveSubsystem;
@@ -30,6 +32,7 @@ public class SwerveCmdJoystick extends Command {
         this.fieldOrientedFunction = fieldOrientedFunction;
         this.limelight = limelight; // auto aim at apriltag
         this.autoAimingFunction = autoAimingFunction;
+        this.headingPID = new PIDController(1/360, 0, 0);
         this.xLimiter = new SlewRateLimiter(DrivebaseConstants.kTeleMaxDriveAccelerationMetersPerSecond);
         this.yLimiter = new SlewRateLimiter(DrivebaseConstants.kTeleMaxDriveAccelerationMetersPerSecond);
         this.turningLimiter = new SlewRateLimiter(DrivebaseConstants.kTeleMaxAngularAccelerationMetersPerSecond);
@@ -46,23 +49,31 @@ public class SwerveCmdJoystick extends Command {
         if(autoAimingFunction.get()) {
             double autoAimSpeed = -limelight.getTx()/40;
             turningSpeed = autoAimSpeed;
-            swerveSubsystem.setLastHeading();
+            swerveSubsystem.updateLastHeading();
         } else if(Math.abs(turningSpdFunction.get()) > OIConstants.kDeadband) {
-            swerveSubsystem.setLastHeading();
+            swerveSubsystem.updateLastHeading();
         } else {
             double desiredHeading = swerveSubsystem.getLastHeading();
             double currentHeading = swerveSubsystem.getHeading();
             double headingError = desiredHeading - currentHeading;
 
-            if(!swerveSubsystem.isNewHeadingMaintainer()) {  // old heading maintainer
-                if(headingError < 180) {
-                    turningSpeed = headingError/360;
-                } else {
-                    turningSpeed = -headingError/360;
-                }
-            } else {  // new (untested) heading maintainer
+            // if(!swerveSubsystem.isNewHeadingMaintainer()) {  // old heading maintainer
+            //     if(headingError < 180) {
+            //         turningSpeed = headingError/360;
+            //     } else {
+            //         turningSpeed = -headingError/360;
+            //     }
+            // } else {  // new (untested) heading maintainer
+                // headingError = ((headingError + 180) % 360) - 180;  // normalized range to (-180, 180)
+                // turningSpeed = headingError/360;
+    
+                // turningSpeed = headingPID.calculate(currentHeading, currentHeading + headingError);
+            // }
+
+            // heading corrector probably isn't useful if some wheels are in the air
+            if(swerveSubsystem.isFlatOnGround()) { 
                 headingError = ((headingError + 180) % 360) - 180;  // normalized range to (-180, 180)
-                turningSpeed = headingError/360;
+                turningSpeed = headingPID.calculate(currentHeading, currentHeading + headingError);
             }
             
         }
