@@ -37,7 +37,7 @@ public class SetShooterCommand extends Command {
         // intake.fixIntakeDirection();  // prevent randomly reversing direction mid-match
 
         // shooter.setShooterSpeed(1);
-        shooter.setShooterSpeed(0.7);
+        shooter.setShooterSpeed(0.8);
         if(Math.abs(shooter.getEncoder().getPosition()) > 10) {  // allow shooter to reach full speed
             intake.setIntakeSpeed(0.5);
         }

@@ -9,12 +9,9 @@ import frc.robot.autos.AutoSpeakerBlue;
 import frc.robot.autos.AutoSpeakerRed;
 import frc.robot.autos.DriveTrajectory;
 import frc.robot.autos.ShootAuto;
-import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.ReverseNoteCommand;
 import frc.robot.commands.SetShooterCommand;
-import frc.robot.commands.SwerveCmdJoystick;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -47,7 +44,7 @@ public class RobotContainer {
 
 private ShooterSubsystem shooter = new ShooterSubsystem(15);
   private IntakeSubsystem intake = new IntakeSubsystem(16);
-  private final PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem(0, 1);
+  // private final PneumaticSubsystem pneumaticSubsystem = new PneumaticSubsystem(0, 1);
 ;
 
   private final Joystick rightJoystick = new Joystick(0); // 0 is the USB Port to be used as indicated on the Driver Station
@@ -59,9 +56,9 @@ private ShooterSubsystem shooter = new ShooterSubsystem(15);
   private final Vision limelight = new Vision();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Set default command  TODO uncomment
+    // Set default command  
     swerveSubsystem.setDefaultCommand(
-      new SwerveCmdJoystick(
+      new TeleopSwerve(
         swerveSubsystem, 
         () -> -controller.getLeftY(), // x is forward and y is sideways (wpilib convention)
         () -> -controller.getLeftX(), 
@@ -125,7 +122,7 @@ private ShooterSubsystem shooter = new ShooterSubsystem(15);
     // ----------------------------------------------------
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.setOffsets()));
     
-    controller.povUp().onTrue(new InstantCommand(() -> pneumaticSubsystem.toggleSolenoid(), pneumaticSubsystem));
+    // controller.povUp().onTrue(new InstantCommand(() -> pneumaticSubsystem.toggleSolenoid(), pneumaticSubsystem));
     // controller.x().onTrue(new InstantCommand(() -> pneumaticSubsystem.getPressure(), pneumaticSubsystem));
   }
 

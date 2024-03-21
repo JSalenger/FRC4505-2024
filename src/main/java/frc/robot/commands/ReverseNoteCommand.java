@@ -36,7 +36,7 @@ public class ReverseNoteCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(shooter.getEncoder().getPosition()) > 2;
+        return Math.abs(shooter.getEncoder().getPosition()) > 6;
     }
 
     

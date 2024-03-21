@@ -24,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     intakeEncoder.setPositionConversionFactor(1);
     intakeMotor.setInverted(true);
 
+
     // intakeMotor.setSmartCurrentLimit(30);
     // deal with high CAN utilization
     // intakeMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);

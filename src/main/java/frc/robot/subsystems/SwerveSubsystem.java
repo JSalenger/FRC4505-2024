@@ -10,6 +10,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -53,6 +54,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void zeroHeading() {
         gyro.reset();
+        lastHeading = getHeading();
     }
 
     public double getHeading() {
@@ -72,7 +74,7 @@ public class SwerveSubsystem extends SubsystemBase {
         lastHeading = getHeading();
     }
 
-    public boolean isNewHeadingMaintainer() {
+    public boolean isMaintainingHeading() {
         return isNewHeadingMaintainer;
     }
 
@@ -113,6 +115,36 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putString("new heading maintainer?", "["+isNewHeadingMaintainer+"]");
 
     } 
+
+    public void drive(double xSpeed, double ySpeed, double turningSpeed, boolean fieldOriented) {
+        ChassisSpeeds chassisSpeeds;
+        if (fieldOriented) {
+            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, getRotation2d());
+        } else {
+            chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+        }
+
+        //5. convert to swerve module states
+        SwerveModuleState[] moduleStates = DrivebaseConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+
+        //6. apply
+        setModules(moduleStates);
+    }
+
+    public double getHeadingCorrection() {
+        double turningSpeed = 0;
+        double desiredHeading = getLastHeading();
+        double currentHeading = getHeading();
+        double headingError = desiredHeading - currentHeading;
+        headingError = ((headingError + 180) % 360) - 180;  // normalized range to (-180, 180)
+        // turningSpeed = headingPID.calculate(currentHeading, currentHeading + headingError);
+        turningSpeed = headingError/32;
+        turningSpeed = Math.max(-0.2, Math.min(turningSpeed, 0.2));  // clamp error correction between -0.2, 0.2
+        turningSpeed = Math.abs(turningSpeed) > 0.02 ? turningSpeed : 0;
+        SmartDashboard.putNumber("heading error", headingError);
+        SmartDashboard.putNumber("last heading", getLastHeading());
+        return turningSpeed;
+    }
 
     public Pose2d getPose() {
         return odometry.getPoseMeters();

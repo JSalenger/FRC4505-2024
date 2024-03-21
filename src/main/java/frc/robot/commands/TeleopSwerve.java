@@ -7,6 +7,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DrivebaseConstants;
@@ -14,7 +15,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.Vision;
 
-public class SwerveCmdJoystick extends Command {
+public class TeleopSwerve extends Command {
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
     private final Supplier<Boolean> fieldOrientedFunction;
@@ -22,9 +23,9 @@ public class SwerveCmdJoystick extends Command {
 
     private final Vision limelight;
     private Supplier<Boolean> autoAimingFunction;
-    private PIDController headingPID;
+    // private PIDController headingPID;
 
-    public SwerveCmdJoystick(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpeedFunction, Supplier<Boolean> fieldOrientedFunction, Vision limelight, Supplier<Boolean> autoAimingFunction) {
+    public TeleopSwerve(SwerveSubsystem swerveSubsystem, Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpeedFunction, Supplier<Boolean> fieldOrientedFunction, Vision limelight, Supplier<Boolean> autoAimingFunction) {
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
@@ -32,7 +33,7 @@ public class SwerveCmdJoystick extends Command {
         this.fieldOrientedFunction = fieldOrientedFunction;
         this.limelight = limelight; // auto aim at apriltag
         this.autoAimingFunction = autoAimingFunction;
-        this.headingPID = new PIDController(1/360, 0, 0);
+        // this.headingPID = new PIDController(1/360, 0, 0);
         this.xLimiter = new SlewRateLimiter(DrivebaseConstants.kTeleMaxDriveAccelerationMetersPerSecond);
         this.yLimiter = new SlewRateLimiter(DrivebaseConstants.kTeleMaxDriveAccelerationMetersPerSecond);
         this.turningLimiter = new SlewRateLimiter(DrivebaseConstants.kTeleMaxAngularAccelerationMetersPerSecond);
@@ -53,28 +54,9 @@ public class SwerveCmdJoystick extends Command {
         } else if(Math.abs(turningSpdFunction.get()) > OIConstants.kDeadband) {
             swerveSubsystem.updateLastHeading();
         } else {
-            double desiredHeading = swerveSubsystem.getLastHeading();
-            double currentHeading = swerveSubsystem.getHeading();
-            double headingError = desiredHeading - currentHeading;
-
-            // if(!swerveSubsystem.isNewHeadingMaintainer()) {  // old heading maintainer
-            //     if(headingError < 180) {
-            //         turningSpeed = headingError/360;
-            //     } else {
-            //         turningSpeed = -headingError/360;
-            //     }
-            // } else {  // new (untested) heading maintainer
-                // headingError = ((headingError + 180) % 360) - 180;  // normalized range to (-180, 180)
-                // turningSpeed = headingError/360;
-    
-                // turningSpeed = headingPID.calculate(currentHeading, currentHeading + headingError);
+            // if(swerveSubsystem.isMaintainingHeading()) {
+            //     turningSpeed = swerveSubsystem.getHeadingCorrection();
             // }
-
-            // heading corrector probably isn't useful if some wheels are in the air
-            if(swerveSubsystem.isFlatOnGround()) { 
-                headingError = ((headingError + 180) % 360) - 180;  // normalized range to (-180, 180)
-                turningSpeed = headingPID.calculate(currentHeading, currentHeading + headingError);
-            }
             
         }
 
@@ -83,26 +65,19 @@ public class SwerveCmdJoystick extends Command {
         ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
+        if(turningSpeed == 0.0 && swerveSubsystem.isMaintainingHeading()) {
+                turningSpeed = swerveSubsystem.getHeadingCorrection();
+            }
+
         //3. make driving smoother
         xSpeed = xLimiter.calculate(xSpeed) * DrivebaseConstants.kTeleMaxDriveSpeed;
         ySpeed = yLimiter.calculate(ySpeed) * DrivebaseConstants.kTeleMaxDriveSpeed;
         turningSpeed = turningLimiter.calculate(turningSpeed) * DrivebaseConstants.kTeleMaxAngularSpeed;
         
         //4. construct desired chassis speeds
-        ChassisSpeeds chassisSpeeds;
-        if (fieldOrientedFunction.get()) {
-            chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, turningSpeed, swerveSubsystem.getRotation2d());
-        } else {
-            chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
-        }
+        swerveSubsystem.drive(xSpeed, ySpeed, turningSpeed, fieldOrientedFunction.get());
 
-        //5. convert to swerve module states
-        SwerveModuleState[] moduleStates = DrivebaseConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-
-        //6. apply
-        swerveSubsystem.setModules(moduleStates);
-
-        // for now, try to set all the wheels to repeatable locations
+        // test mode
         // SwerveModuleState testState = new SwerveModuleState(.5*1, new Rotation2d(0));
         // SwerveModuleState[] testModuleStates = {testState, testState, testState, testState};
         // swerveSubsystem.setModules(testModuleStates);

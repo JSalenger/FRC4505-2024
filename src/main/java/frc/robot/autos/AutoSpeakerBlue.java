@@ -27,7 +27,7 @@ public class AutoSpeakerBlue extends SequentialCommandGroup {
             .setKinematics(Constants.DrivebaseConstants.kDriveKinematics);
         
         Pose2d robotStartPose = new Pose2d(2.3, 5.65, new Rotation2d(0));
-        Pose2d middleNotePose = new Pose2d(4.3+2, 5.65, new Rotation2d(0));
+        Pose2d middleNotePose = new Pose2d(4.3 + 0.5, 5.65, new Rotation2d(0));
         Pose2d leftNotePose = new Pose2d(4.3, 7, new Rotation2d(0));
         Pose2d speakerPoseWithMargin = new Pose2d(2.3, 5.65-0.1, new Rotation2d(0));  // add margin so robot doesn't run into speaker
         //x 2.5
@@ -69,8 +69,8 @@ public class AutoSpeakerBlue extends SequentialCommandGroup {
             new ReverseNoteCommand(shooter, intake), 
             new ReverseNoteCommand(shooter, intake), // replace with stop intake command
             new DriveTrajectory(swerve, goToSpeakerFromMiddleNote), 
-            new SetShooterCommand(shooter, intake), // replace with shoot command
-            new DriveTrajectory(swerve, goToMiddleNote)// third (left) note  TODO: maybe remove for some matches
+            new SetShooterCommand(shooter, intake) // replace with shoot command
+            // new DriveTrajectory(swerve, goToMiddleNote)// third (left) note  TODO: maybe remove for some matches
             // intake.setIntakeCommand(1), // replace with start intake command
             // new DriveTrajectory(swerve, goToLeftNote), 
             // intake.setIntakeCommand(0), // replace with stop intake command

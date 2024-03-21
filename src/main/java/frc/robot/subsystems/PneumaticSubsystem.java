@@ -21,13 +21,15 @@ public class PneumaticSubsystem extends SubsystemBase {
   private final Compressor compressor;
   /** Creates a new ExampleSubsystem. */
   public PneumaticSubsystem(int fChannel1, int rChannel1) {
-    this.dSolenoid1 = new DoubleSolenoid(PneumaticsModuleType.REVPH, fChannel1, rChannel1);
+    this.dSolenoid1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, fChannel1, rChannel1);
     dSolenoid1.set(Value.kReverse); //Set Double Soleniod to postition B
     compressor = new Compressor(PneumaticsModuleType.REVPH);
   }
 
   public void toggleSolenoid(){
     dSolenoid1.toggle();
+    SmartDashboard.putNumber("solenoid toggle", System.currentTimeMillis());
+
   }
 
   public void getPressureSwitchValue(){
