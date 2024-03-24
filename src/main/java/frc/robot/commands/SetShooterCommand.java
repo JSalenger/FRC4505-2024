@@ -38,7 +38,10 @@ public class SetShooterCommand extends Command {
 
         // shooter.setShooterSpeed(1);
         shooter.setShooterSpeed(0.8);
-        if(Math.abs(shooter.getEncoder().getPosition()) > 10) {  // allow shooter to reach full speed
+        // if(Math.abs(shooter.getEncoder().getVelocity()) > 0.75) {
+        //     intake.setIntakeCommand(0.5);
+        // }
+        if(Math.abs(shooter.getEncoder().getPosition()) > 20) {  // allow shooter to reach full speed
             intake.setIntakeSpeed(0.5);
         }
     }
@@ -52,7 +55,7 @@ public class SetShooterCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return Math.abs(shooter.getEncoder().getPosition()) > 40; //100
+        return Math.abs(shooter.getEncoder().getPosition()) > 45; //100
     }
 
     

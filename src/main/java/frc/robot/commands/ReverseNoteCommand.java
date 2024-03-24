@@ -13,6 +13,7 @@ public class ReverseNoteCommand extends Command {
         this.intake = intake;
         // addRequirements(shooter, intake);
         shooter.getEncoder().setPosition(0);
+        intake.getEncoder().setPosition(0);
 
         addRequirements(shooter, intake);
     }
@@ -37,6 +38,7 @@ public class ReverseNoteCommand extends Command {
     @Override
     public boolean isFinished() {
         return Math.abs(shooter.getEncoder().getPosition()) > 6;
+        // return Math.abs(intake.getEncoder().getPosition()) > 4 || Math.abs(shooter.getEncoder().getPosition()) > 8;
     }
 
     

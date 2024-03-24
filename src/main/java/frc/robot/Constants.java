@@ -25,10 +25,10 @@ public final class Constants {
   public static class DrivebaseConstants {
     public static final double kMaxSpeedMetersPerSecond = 4;
     public static final double kMaxAngularSpeed = 2 * 2 * Math.PI;
-    public static final double kTeleMaxDriveAccelerationMetersPerSecond = 3;
-    public static final double kTeleMaxAngularAccelerationMetersPerSecond = 3;
+    public static final double kTeleMaxDriveAccelerationMetersPerSecond = 4;  // 3
+    public static final double kTeleMaxAngularAccelerationMetersPerSecond = 3;  // 3
 
-    public static final double kTeleMaxDriveSpeed = kMaxSpeedMetersPerSecond * 0.75;  // /2
+    public static final double kTeleMaxDriveSpeed = kMaxSpeedMetersPerSecond * 0.95; //;  0.875
     public static final double kTeleMaxAngularSpeed = kMaxAngularSpeed / 4;
 
     public static final double kTrackWidth = Units.inchesToMeters(29); // diff btw left and right
@@ -65,8 +65,8 @@ public final class Constants {
     public static final double kDeadband = 0.05;
 }
   public static final class AutoConstants {
-    public static final double kPXController = 1;  // all kP previously 1
-    public static final double kPYController = 1;
+    public static final double kPXController = 0.3*0.5;  // all kP previously 1
+    public static final double kPYController = 0.3*0.5;
     public static final double kPAngleController = 15;  // 5
     public static final double kMaxSpeedMetersPerSecond = 3;  // 3
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;  // 3

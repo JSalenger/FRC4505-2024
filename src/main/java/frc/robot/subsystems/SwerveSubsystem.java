@@ -138,8 +138,8 @@ public class SwerveSubsystem extends SubsystemBase {
         double headingError = desiredHeading - currentHeading;
         headingError = ((headingError + 180) % 360) - 180;  // normalized range to (-180, 180)
         // turningSpeed = headingPID.calculate(currentHeading, currentHeading + headingError);
-        turningSpeed = headingError/32;
-        turningSpeed = Math.max(-0.2, Math.min(turningSpeed, 0.2));  // clamp error correction between -0.2, 0.2
+        turningSpeed = headingError * 0.05;
+        turningSpeed = Math.max(-0.4, Math.min(turningSpeed, 0.4));  // clamp error correction between -0.2, 0.2
         turningSpeed = Math.abs(turningSpeed) > 0.02 ? turningSpeed : 0;
         SmartDashboard.putNumber("heading error", headingError);
         SmartDashboard.putNumber("last heading", getLastHeading());

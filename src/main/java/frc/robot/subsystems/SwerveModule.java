@@ -49,7 +49,7 @@ public class SwerveModule extends SubsystemBase {
         this.turningMotor.setIdleMode(IdleMode.kBrake);
         this.driveMotor.setIdleMode(IdleMode.kBrake);  // coast
 
-        this.turningMotor.setSmartCurrentLimit(20);
+        this.turningMotor.setSmartCurrentLimit(40);
         this.driveMotor.setSmartCurrentLimit(40);
         
         this.driveEncoder = this.driveMotor.getEncoder();
@@ -69,6 +69,8 @@ public class SwerveModule extends SubsystemBase {
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
 
         resetEncoders();
+        // driveMotor.burnFlash();
+        // turningMotor.burnFlash();
     }
 
     public SwerveModule(int moduleID, boolean driveMotorReversed, boolean turningMotorReversed, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {

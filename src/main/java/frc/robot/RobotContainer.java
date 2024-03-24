@@ -5,10 +5,13 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.autos.AutoShootParkLeft;
+import frc.robot.autos.AutoShootParkRight;
 import frc.robot.autos.AutoSpeakerBlue;
 import frc.robot.autos.AutoSpeakerRed;
 import frc.robot.autos.DriveTrajectory;
 import frc.robot.autos.ShootAuto;
+import frc.robot.commands.GoToSpeaker;
 import frc.robot.commands.ReverseNoteCommand;
 import frc.robot.commands.SetShooterCommand;
 import frc.robot.commands.TeleopSwerve;
@@ -71,7 +74,10 @@ private ShooterSubsystem shooter = new ShooterSubsystem(15);
     configureBindings();
 
     m_Chooser.setDefaultOption("simple shoot", new ShootAuto(swerveSubsystem, shooter, intake));
-    m_Chooser.addOption("2 note speaker middle", new AutoSpeakerBlue(swerveSubsystem, shooter, intake));
+    m_Chooser.addOption("2 note speaker MIDDLE", new AutoSpeakerBlue(swerveSubsystem, shooter, intake));
+    m_Chooser.addOption("speaker LEFT auto w/ leave", new AutoShootParkLeft(swerveSubsystem, shooter, intake));
+    m_Chooser.addOption("speaker RIGHT auto w/ leave", new AutoShootParkRight(swerveSubsystem, shooter, intake));
+
     SmartDashboard.putData("auto chooser", m_Chooser);
 
   }
@@ -93,9 +99,10 @@ private ShooterSubsystem shooter = new ShooterSubsystem(15);
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     // m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    //---------------------------  TODO uncomment
+    //---------------------------
     controller.x().onTrue(new InstantCommand(() -> swerveSubsystem.zeroHeading()));
-    controller.y().onTrue(new InstantCommand(() -> swerveSubsystem.resetOdometry(new Pose2d())));
+    controller.povRight().onTrue(new InstantCommand(() -> swerveSubsystem.resetOdometry(new Pose2d())));
+    // controller.y().whileTrue(new GoToSpeaker(swerveSubsystem, limelight));
     //---------------------------------
     // TESTS
     boolean testingAngle = false;
@@ -104,21 +111,20 @@ private ShooterSubsystem shooter = new ShooterSubsystem(15);
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(3, 0.5, testingAngle), swerveSubsystem));
     // controller.x().onTrue(new InstantCommand(() -> swerveSubsystem.testModule(4, 0.5, testingAngle), swerveSubsystem));
     // controller.a().onFalse(intake.setIntakeCommand(0));
-    //------------------------------------------ TODO uncomment
+    //------------------------------------------
     // controller.rightBumper().onTrue(new InstantCommand(() -> swerveSubsystem.stopModules()));
     controller.leftBumper().onTrue(new SetShooterCommand(shooter, intake).withTimeout(4));
     controller.a().onTrue(intake.setIntakeCommand(1));
     controller.a().onFalse(new ReverseNoteCommand(shooter, intake).withTimeout(2));
 
-    controller.rightBumper().onTrue(shooter.setShooterCommand(-0.5));
-    // controller.rightBumper().onFalse(shooter.setShooterCommand(0));
+    controller.rightBumper().onTrue(shooter.setShooterCommand(-0.8));
     controller.rightBumper().onFalse(new ReverseNoteCommand(shooter, intake).withTimeout(2));
 
     controller.povDown().onTrue(new InstantCommand(() -> swerveSubsystem.toggleHeadingMaintainer()));
-    controller.povLeft().onTrue(new InstantCommand(() -> swerveSubsystem.toggleDriveMotorIdleModes()));
+    // controller.povLeft().onTrue(new InstantCommand(() -> swerveSubsystem.toggleDriveMotorIdleModes()));
 
-    controller.povRight().onTrue(intake.setIntakeCommand(-0.5));
-    controller.povRight().onFalse(intake.setIntakeCommand(0));
+    controller.y().onTrue(intake.setIntakeCommand(-0.5));
+    controller.y().onFalse(intake.setIntakeCommand(0));
     // ----------------------------------------------------
     // controller.a().onTrue(new InstantCommand(() -> swerveSubsystem.setOffsets()));
     
