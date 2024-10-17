@@ -49,7 +49,7 @@ public class SwerveModule extends SubsystemBase {
         this.turningMotor.setIdleMode(IdleMode.kBrake);
         this.driveMotor.setIdleMode(IdleMode.kBrake);  // coast
 
-        this.turningMotor.setSmartCurrentLimit(40);
+        this.turningMotor.setSmartCurrentLimit(30);
         this.driveMotor.setSmartCurrentLimit(40);
         
         this.driveEncoder = this.driveMotor.getEncoder();
